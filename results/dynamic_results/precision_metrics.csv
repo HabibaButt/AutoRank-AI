@@ -1,0 +1,4 @@
+Job,P@1_Original,P@3_Original,P@5_Original,P@8_Original,P@1_Tuned,P@3_Tuned,P@5_Tuned,P@8_Tuned
+Data Analyst,1.0,1.0,0.8,0.5,1.0,1.0,0.8,0.5
+Marketing Manager,0.0,0.0,0.0,0.0,1.0,0.3333333333333333,0.2,0.125
+Software Engineer,1.0,0.3333333333333333,0.2,0.125,1.0,0.6666666666666666,0.4,0.25
