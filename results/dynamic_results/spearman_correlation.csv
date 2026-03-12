@@ -1,0 +1,4 @@
+Job,Spearman_Correlation,P_Value,Significant,Strength
+Data Analyst,0.9819805060619659,1.4430449972093693e-05,True,Very Strong
+Marketing Manager,0.7637626158259734,0.027396043909112044,True,Strong
+Software Engineer,0.9221722216732094,0.0011108173578061712,True,Very Strong
