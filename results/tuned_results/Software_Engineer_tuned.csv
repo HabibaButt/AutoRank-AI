@@ -1,0 +1,9 @@
+Candidate_ID,Name,Base_Similarity,Experience_Score,Final_Score,Final_Percentage,Tier,Rank,Score_Num,Tuned_Tier
+C6,Fiona Zhang,0.802,1.0,0.861,86.1%,🔵 HIGH,1,0.861,🔵 HIGH
+C8,Helen Torres,0.351,0.833,0.496,49.6%,🟡 LOW,2,0.496,🟢 MEDIUM
+C1,Alice Chen,0.115,1.0,0.381,38.1%,🟡 LOW,3,0.381,🟡 LOW
+C3,Charlie Brown,0.064,0.667,0.245,24.5%,🟡 LOW,4,0.245,🟡 LOW
+C7,George Lee,0.103,0.5,0.222,22.2%,🟡 LOW,5,0.222,🟡 LOW
+C2,Bob Smith,0.021,0.333,0.115,11.5%,🟡 LOW,6,0.115,🟡 LOW
+C4,Diana Prince,0.0,0.0,0.0,0.0%,🟡 LOW,7,0.0,🟡 LOW
+C5,Evan Wright,0.0,0.0,0.0,0.0%,🟡 LOW,7,0.0,🟡 LOW

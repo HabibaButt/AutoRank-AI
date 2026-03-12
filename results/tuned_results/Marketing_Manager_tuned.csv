@@ -1,0 +1,9 @@
+Candidate_ID,Name,Base_Similarity,Experience_Score,Final_Score,Final_Percentage,Tier,Rank,Score_Num,Tuned_Tier
+C4,Diana Prince,0.273,1.0,0.491,49.1%,🟡 LOW,1,0.491,🟢 MEDIUM
+C5,Evan Wright,0.196,0.667,0.337,33.7%,🟡 LOW,2,0.337,🟡 LOW
+C2,Bob Smith,0.0,0.0,0.0,0.0%,🟡 LOW,3,0.0,🟡 LOW
+C1,Alice Chen,0.0,0.0,0.0,0.0%,🟡 LOW,3,0.0,🟡 LOW
+C3,Charlie Brown,0.0,0.0,0.0,0.0%,🟡 LOW,3,0.0,🟡 LOW
+C6,Fiona Zhang,0.0,0.0,0.0,0.0%,🟡 LOW,3,0.0,🟡 LOW
+C7,George Lee,0.0,0.0,0.0,0.0%,🟡 LOW,3,0.0,🟡 LOW
+C8,Helen Torres,0.0,0.0,0.0,0.0%,🟡 LOW,3,0.0,🟡 LOW
