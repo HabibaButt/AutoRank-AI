@@ -1,0 +1,9 @@
+Candidate_ID,Name,Base_Similarity,Experience_Score,Final_Score,Final_Percentage,Tier,Rank
+C3,Charlie Brown,0.85,1.0,0.895,89.5%,🔵 HIGH,1
+C1,Alice Chen,0.617,1.0,0.732,73.2%,🟢 MEDIUM,2
+C8,Helen Torres,0.427,1.0,0.599,59.9%,🟢 MEDIUM,3
+C6,Fiona Zhang,0.305,1.0,0.514,51.4%,🟢 MEDIUM,4
+C7,George Lee,0.042,0.667,0.229,22.9%,🟡 LOW,5
+C2,Bob Smith,0.023,0.333,0.116,11.6%,🟡 LOW,6
+C4,Diana Prince,0.0,0.0,0.0,0.0%,🟡 LOW,7
+C5,Evan Wright,0.0,0.0,0.0,0.0%,🟡 LOW,7
