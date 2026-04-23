@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+*{
+    box-sizing:border-box;
+    font-family:-apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
+}
+body{
+    margin:0;
+    background:#000;
+    display:flex;
+    justify-content:center;
+}
+.container{
+    width:100%;
+    max-width:420px;
+    min-height:100vh;
+    padding:22px;
+    background:linear-gradient(180deg,#0b1c3d,#000);
+    border-radius:30px;
+    color:white;
+}
+.screen{display:none;}
+.active{display:block;}
+
+h1{font-size:32px;margin-bottom:8px;}
+.subtitle{color:#9aa3b2;margin-bottom:20px;}
+
+.input{
+    width:100%;
+    padding:16px;
+    border-radius:18px;
+    border:none;
+    margin-bottom:15px;
+    background:#2b3b55;
+    color:white;
+}
+
+.btn{
+    padding:12px 18px;
+    border-radius:22px;
+    background:#3b4a61;
+    display:inline-block;
+    margin:6px 6px 6px 0;
+    cursor:pointer;
+    transition:0.2s;
+}
+.btn:hover{
+    background:#4f5f7a;
+    transform:scale(1.05);
+}
+.primary{background:#4a90ff;}
+
+.card{
+    background:#2a3648;
+    border-radius:22px;
+    padding:16px;
+    margin:12px 0;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    cursor:pointer;
+    transition:0.25s;
+}
+.card:hover{
+    transform:translateY(-3px) scale(1.01);
+    box-shadow:0 8px 20px rgba(0,0,0,0.4);
+    background:#32425a;
+}
+
+.row{display:flex;align-items:center;}
+.rank{
+    background:#1c2635;
+    width:32px;
+    height:32px;
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    margin-right:12px;
+}
+.score{color:#cbd3df;}
+.top{
+    color:#00e676;
+    font-size:12px;
+    margin-top:2px;
+}
+
+.high{border-left:5px solid #4a90ff;}
+.mid{border-left:5px solid #00e676;}
+.low{border-left:5px solid #ffcc00;}
+
+.back{
+    color:#9aa3b2;
+    margin-bottom:15px;
+    cursor:pointer;
+}
+.warning{color:#ffcc00;margin:10px 0;}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<!-- HOME -->
+<div id="home" class="screen active">
+<h1>AutoRank AI</h1>
+<div class="subtitle">Instantly rank candidates based on skill fit and experience</div>
+
+<input class="input" placeholder="Enter job title">
+<textarea class="input" placeholder="Paste job description"></textarea>
+
+<div class="btn" onclick="show('data')">Data Analyst</div>
+<div class="btn" onclick="show('marketing')">Marketing Manager</div>
+<div class="btn" onclick="show('software')">Software Engineer</div>
+
+<div class="btn primary" onclick="show('all')">View All</div>
+</div>
+
+<!-- DATA -->
+<div id="data" class="screen">
+<div class="back" onclick="show('home')">← Back</div>
+<h1>Data Analyst</h1>
+
+<div class="card high" onclick="detail('Charlie Brown','Data Analyst','89.5%','HIGH','Strong alignment across Python, SQL, and Tableau.')">
+<div class="row">
+<div class="rank">1</div>
+<div>Charlie Brown<div class="top">Top Candidate</div></div>
+</div>
+<div class="score">89.5%</div>
+</div>
+
+<div class="card mid" onclick="detail('Alice Chen','Data Analyst','73.2%','MID','Good analytical foundation.')">
+<div class="row"><div class="rank">2</div>Alice Chen</div>
+<div class="score">73.2%</div>
+</div>
+
+<div class="card mid" onclick="detail('Helen Torres','Data Analyst','59.9%','MID','Basic analytics skills.')">
+<div class="row"><div class="rank">3</div>Helen Torres</div>
+<div class="score">59.9%</div>
+</div>
+
+<div class="card mid" onclick="detail('Fiona Zhang','Data Analyst','51.4%','MID','Needs more tool depth.')">
+<div class="row"><div class="rank">4</div>Fiona Zhang</div>
+<div class="score">51.4%</div>
+</div>
+
+<div class="card low" onclick="detail('George Lee','Data Analyst','22.9%','LOW','Insufficient exposure to core data tools.')">
+<div class="row"><div class="rank">5</div>George Lee</div>
+<div class="score">22.9%</div>
+</div>
+</div>
+
+<!-- MARKETING -->
+<div id="marketing" class="screen">
+<div class="back" onclick="show('home')">← Back</div>
+<h1>Marketing Manager</h1>
+
+<div class="warning">⚠ No strong candidates found</div>
+
+<div class="card mid" onclick="detail('Diana Prince','Marketing Manager','49.1%','MID','Moderate campaign strategy exposure, lacks strong analytics depth.')">
+<div class="row">
+<div class="rank">1</div>
+<div>Diana Prince<div class="top">Top Candidate</div></div>
+</div>
+<div class="score">49.1%</div>
+</div>
+
+<div class="card low" onclick="detail('Evan Wright','Marketing Manager','33.7%','LOW','Weak campaign analytics.')">
+<div class="row"><div class="rank">2</div>Evan Wright</div>
+<div class="score">33.7%</div>
+</div>
+</div>
+
+<!-- SOFTWARE -->
+<div id="software" class="screen">
+<div class="back" onclick="show('home')">← Back</div>
+<h1>Software Engineer</h1>
+
+<div class="card high" onclick="detail('Fiona Zhang','Software Engineer','86.1%','HIGH','Strong backend + cloud stack.')">
+<div class="row">
+<div class="rank">1</div>
+<div>Fiona Zhang<div class="top">Top Candidate</div></div>
+</div>
+<div class="score">86.1%</div>
+</div>
+
+<div class="card mid" onclick="detail('Helen Torres','Software Engineer','49.6%','MID','Good base, needs backend depth.')">
+<div class="row"><div class="rank">2</div>Helen Torres</div>
+<div class="score">49.6%</div>
+</div>
+
+<div class="card low" onclick="detail('Alice Chen','Software Engineer','38.1%','LOW','Limited coding depth.')">
+<div class="row"><div class="rank">3</div>Alice Chen</div>
+<div class="score">38.1%</div>
+</div>
+
+<div class="card low" onclick="detail('Charlie Brown','Software Engineer','24.5%','LOW','Not aligned with engineering role.')">
+<div class="row"><div class="rank">4</div>Charlie Brown</div>
+<div class="score">24.5%</div>
+</div>
+
+<div class="card low" onclick="detail('George Lee','Software Engineer','22.2%','LOW','Weak technical foundation.')">
+<div class="row"><div class="rank">5</div>George Lee</div>
+<div class="score">22.2%</div>
+</div>
+
+<div class="card low" onclick="detail('Bob Smith','Software Engineer','11.5%','LOW','Minimal experience.')">
+<div class="row"><div class="rank">6</div>Bob Smith</div>
+<div class="score">11.5%</div>
+</div>
+
+</div>
+
+<!-- ALL -->
+<div id="all" class="screen">
+<div class="back" onclick="show('home')">← Back</div>
+<h1>All Candidates</h1>
+
+<div class="card high" onclick="detail('Charlie Brown','Data Analyst','89.5%','HIGH','Strong alignment across Python, SQL, and Tableau.')">
+<div class="row"><div class="rank">1</div>Charlie Brown</div>
+<div class="score">89.5%</div>
+</div>
+
+<div class="card high" onclick="detail('Fiona Zhang','Software Engineer','86.1%','HIGH','Strong backend + cloud stack.')">
+<div class="row"><div class="rank">2</div>Fiona Zhang</div>
+<div class="score">86.1%</div>
+</div>
+
+<div class="card mid" onclick="detail('Alice Chen','Data Analyst','73.2%','MID','Good analytical foundation.')">
+<div class="row"><div class="rank">3</div>Alice Chen</div>
+<div class="score">73.2%</div>
+</div>
+
+<div class="card mid" onclick="detail('Helen Torres','Data Analyst','59.9%','MID','Basic analytics skills.')">
+<div class="row"><div class="rank">4</div>Helen Torres</div>
+<div class="score">59.9%</div>
+</div>
+
+<div class="card mid" onclick="detail('Diana Prince','Marketing Manager','49.1%','MID','Moderate campaign strategy exposure, lacks strong analytics depth.')">
+<div class="row"><div class="rank">5</div>Diana Prince</div>
+<div class="score">49.1%</div>
+</div>
+
+<div class="card low" onclick="detail('Evan Wright','Marketing Manager','33.7%','LOW','Weak campaign analytics.')">
+<div class="row"><div class="rank">6</div>Evan Wright</div>
+<div class="score">33.7%</div>
+</div>
+
+<div class="card low" onclick="detail('George Lee','Data Analyst','22.9%','LOW','Insufficient exposure to core data tools.')">
+<div class="row"><div class="rank">7</div>George Lee</div>
+<div class="score">22.9%</div>
+</div>
+
+<div class="card low" onclick="detail('Bob Smith','Software Engineer','11.5%','LOW','Minimal relevant experience.')">
+<div class="row"><div class="rank">8</div>Bob Smith</div>
+<div class="score">11.5%</div>
+</div>
+
+</div>
+
+<!-- DETAIL -->
+<div id="detail" class="screen">
+<div class="back" onclick="show(previousScreen)">← Back</div>
+
+<h1 id="dname"></h1>
+<p id="drole"></p>
+<p id="dscore"></p>
+<p id="dlevel"></p>
+
+<br>
+
+<div id="dlabel"></div>
+<p id="ddesc"></p>
+</div>
+
+</div>
+
+<script>
+let previousScreen="home";
+
+function show(id){
+previousScreen=document.querySelector('.screen.active').id;
+document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+document.getElementById(id).classList.add('active');
+}
+
+function detail(name,role,score,level,desc){
+previousScreen=document.querySelector('.screen.active').id;
+
+dname.innerText=name;
+drole.innerText="Role: "+role;
+dscore.innerText="Score: "+score;
+dlevel.innerText="Level: "+level;
+ddesc.innerText=desc;
+
+let s=parseFloat(score);
+if(s>=70){
+dlabel.innerText="✅ Why this candidate";
+dlabel.style.color="#00e676";
+}
+else if(s>=40){
+dlabel.innerText="🟡 Moderate fit";
+dlabel.style.color="#ffcc00";
+}
+else{
+dlabel.innerText="❌ Why NOT this candidate";
+dlabel.style.color="#ff4d4d";
+}
+
+show("detail");
+}
+</script>
+
+</body>
+</html>
