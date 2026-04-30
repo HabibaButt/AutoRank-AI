@@ -1,0 +1,1997 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AutoRank AI - Intelligent Candidate Screening</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #1E3A8A;
+            --primary-light: #3B82F6;
+            --primary-lighter: #DBEAFE;
+            --success: #10B981;
+            --success-light: #D1FAE5;
+            --warning: #F59E0B;
+            --warning-light: #FEF3C7;
+            --error: #EF4444;
+            --error-light: #FEE2E2;
+            --bg: #F3F4F6;
+            --card: #FFFFFF;
+            --text: #1F2937;
+            --text-secondary: #6B7280;
+            --border: #E5E7EB;
+            --shadow: 0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+            --shadow-xl: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04);
+            --radius: 12px;
+            --radius-sm: 8px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Header */
+        .header {
+            background: var(--card);
+            border-bottom: 1px solid var(--border);
+            padding: 16px 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: var(--shadow);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: var(--primary);
+            cursor: pointer;
+        }
+
+        .logo-icon {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.1rem;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .shortlist-btn-header {
+            position: relative;
+            background: var(--primary-lighter);
+            color: var(--primary);
+            border: none;
+            padding: 10px 20px;
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+
+        .shortlist-btn-header:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .shortlist-badge {
+            position: absolute;
+            top: -6px;
+            right: -6px;
+            background: var(--error);
+            color: white;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            font-size: 0.7rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+        }
+
+        /* Landing Page */
+        .landing {
+            min-height: calc(100vh - 70px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 60px 24px;
+        }
+
+        .hero {
+            text-align: center;
+            max-width: 800px;
+            margin-bottom: 60px;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--primary-lighter);
+            color: var(--primary);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 24px;
+        }
+
+        .hero h1 {
+            font-size: 3.2rem;
+            font-weight: 800;
+            color: var(--primary);
+            line-height: 1.2;
+            margin-bottom: 20px;
+        }
+
+        .hero h1 span {
+            background: linear-gradient(135deg, var(--primary-light), var(--success));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto 36px;
+        }
+
+        .cta-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: white;
+            padding: 16px 36px;
+            border-radius: var(--radius);
+            font-size: 1.1rem;
+            font-weight: 700;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 14px rgba(30, 58, 138, 0.4);
+        }
+
+        .cta-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(30, 58, 138, 0.5);
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 24px;
+            max-width: 900px;
+            width: 100%;
+            margin-bottom: 48px;
+        }
+
+        .feature-card {
+            background: var(--card);
+            padding: 28px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            text-align: center;
+            transition: all 0.3s;
+            border: 1px solid var(--border);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .feature-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--primary-lighter);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+            font-size: 1.4rem;
+        }
+
+        .feature-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--primary);
+        }
+
+        .feature-card p {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .trust-badges {
+            display: flex;
+            gap: 24px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .trust-badge {
+            background: var(--card);
+            border: 2px solid var(--border);
+            padding: 12px 24px;
+            border-radius: var(--radius-sm);
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: var(--primary);
+        }
+
+        .trust-badge span {
+            color: var(--success);
+        }
+
+        /* Job Selection */
+        .job-selection {
+            display: none;
+            min-height: calc(100vh - 70px);
+            padding: 48px 24px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--primary);
+            margin-bottom: 8px;
+        }
+
+        .section-subtitle {
+            color: var(--text-secondary);
+            margin-bottom: 36px;
+            font-size: 1rem;
+        }
+
+        .quick-select {
+            margin-bottom: 40px;
+        }
+
+        .quick-select h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: var(--text-secondary);
+        }
+
+        .job-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 16px;
+        }
+
+        .job-card {
+            background: var(--card);
+            border: 2px solid var(--border);
+            border-radius: var(--radius);
+            padding: 24px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .job-card:hover {
+            border-color: var(--primary-light);
+            box-shadow: var(--shadow-lg);
+            transform: translateY(-2px);
+        }
+
+        .job-card.selected {
+            border-color: var(--primary);
+            background: var(--primary-lighter);
+        }
+
+        .job-card h4 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 8px;
+        }
+
+        .job-card .skills-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-bottom: 8px;
+        }
+
+        .skill-chip {
+            background: var(--primary-lighter);
+            color: var(--primary);
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .job-card .exp {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin: 32px 0;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .divider::before, .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border);
+        }
+
+        .custom-form {
+            background: var(--card);
+            border-radius: var(--radius);
+            padding: 32px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 6px;
+            font-size: 0.9rem;
+            color: var(--text);
+        }
+
+        .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-size: 0.95rem;
+            font-family: inherit;
+            transition: border-color 0.2s;
+        }
+
+        .form-group input:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary-light);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .analyze-btn {
+            width: 100%;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: white;
+            padding: 14px;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .analyze-btn:hover {
+            box-shadow: 0 4px 14px rgba(30, 58, 138, 0.4);
+            transform: translateY(-1px);
+        }
+
+        .analyze-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Dashboard */
+        .dashboard {
+            display: none;
+            padding: 24px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .dashboard-header {
+            background: var(--card);
+            border-radius: var(--radius);
+            padding: 24px 32px;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+        }
+
+        .dashboard-header-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .job-info h2 {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--primary);
+        }
+
+        .job-info .meta {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-top: 8px;
+            flex-wrap: wrap;
+        }
+
+        .job-info .meta .skill-chip {
+            background: var(--primary-lighter);
+            color: var(--primary);
+        }
+
+        .job-info .meta .exp-badge {
+            background: var(--success-light);
+            color: #065F46;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .back-btn {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            padding: 10px 20px;
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            transition: all 0.2s;
+        }
+
+        .back-btn:hover {
+            background: var(--border);
+        }
+
+        /* Filter Bar */
+        .filter-bar {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+            position: sticky;
+            top: 70px;
+            z-index: 50;
+            background: var(--bg);
+            padding: 12px 0;
+        }
+
+        .filter-btn {
+            padding: 10px 20px;
+            border-radius: 20px;
+            border: 2px solid var(--border);
+            background: var(--card);
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .filter-btn.active {
+            border-color: var(--primary);
+            background: var(--primary-lighter);
+            color: var(--primary);
+        }
+
+        .filter-btn:hover {
+            border-color: var(--primary-light);
+        }
+
+        .filter-count {
+            background: var(--primary);
+            color: white;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+        }
+
+        .filter-btn.active .filter-count {
+            background: var(--primary);
+        }
+
+        /* Dashboard Layout */
+        .dashboard-content {
+            display: flex;
+            gap: 24px;
+        }
+
+        .candidates-grid {
+            flex: 1;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 16px;
+            align-content: start;
+        }
+
+        /* Candidate Card */
+        .candidate-card {
+            background: var(--card);
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            padding: 24px;
+            transition: all 0.3s;
+            box-shadow: var(--shadow);
+            animation: fadeIn 0.4s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .candidate-card:hover {
+            box-shadow: var(--shadow-lg);
+            transform: translateY(-2px);
+        }
+
+        .card-top {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .rank-badge {
+            width: 44px;
+            height: 44px;
+            background: var(--primary);
+            color: white;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            font-weight: 800;
+            flex-shrink: 0;
+        }
+
+        .card-name-section {
+            flex: 1;
+        }
+
+        .card-name-section h3 {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .tier-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .tier-high {
+            background: var(--primary-lighter);
+            color: var(--primary);
+        }
+
+        .tier-medium {
+            background: var(--success-light);
+            color: #065F46;
+        }
+
+        .tier-low {
+            background: var(--warning-light);
+            color: #92400E;
+        }
+
+        .score-circle {
+            position: relative;
+            width: 56px;
+            height: 56px;
+            flex-shrink: 0;
+        }
+
+        .score-circle canvas {
+            width: 56px !important;
+            height: 56px !important;
+        }
+
+        .score-text {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: 800;
+            color: var(--text);
+        }
+
+        .card-skills {
+            margin-bottom: 16px;
+        }
+
+        .card-skills-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .skills-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+        }
+
+        .skill-match {
+            background: var(--success-light);
+            color: #065F46;
+            padding: 3px 8px;
+            border-radius: 8px;
+            font-size: 0.72rem;
+            font-weight: 600;
+        }
+
+        .skill-missing {
+            background: var(--error-light);
+            color: #991B1B;
+            padding: 3px 8px;
+            border-radius: 8px;
+            font-size: 0.72rem;
+            font-weight: 600;
+        }
+
+        .card-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .details-btn {
+            flex: 1;
+            padding: 10px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .details-btn:hover {
+            background: #152e6e;
+        }
+
+        .shortlist-card-btn {
+            padding: 10px 16px;
+            background: var(--card);
+            border: 2px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .shortlist-card-btn:hover {
+            border-color: var(--success);
+            background: var(--success-light);
+        }
+
+        .shortlist-card-btn.shortlisted {
+            background: var(--success);
+            color: white;
+            border-color: var(--success);
+        }
+
+        /* Shortlist Panel */
+        .shortlist-panel {
+            position: fixed;
+            top: 0;
+            right: -400px;
+            width: 380px;
+            height: 100vh;
+            background: var(--card);
+            box-shadow: -4px 0 20px rgba(0,0,0,0.1);
+            z-index: 200;
+            transition: right 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .shortlist-panel.open {
+            right: 0;
+        }
+
+        .shortlist-panel-header {
+            padding: 24px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .shortlist-panel-header h3 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .close-panel-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-secondary);
+            padding: 4px;
+        }
+
+        .shortlist-panel-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px 24px;
+        }
+
+        .shortlist-empty {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-secondary);
+        }
+
+        .shortlist-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border);
+            margin-bottom: 8px;
+            transition: all 0.2s;
+        }
+
+        .shortlist-item:hover {
+            background: var(--bg);
+        }
+
+        .shortlist-item-info {
+            flex: 1;
+        }
+
+        .shortlist-item-info h4 {
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .shortlist-item-info p {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        .remove-shortlist-btn {
+            background: none;
+            border: none;
+            color: var(--error);
+            cursor: pointer;
+            font-size: 1.1rem;
+            padding: 4px;
+        }
+
+        .shortlist-panel-footer {
+            padding: 20px 24px;
+            border-top: 1px solid var(--border);
+        }
+
+        .export-btn {
+            width: 100%;
+            padding: 12px;
+            background: var(--success);
+            color: white;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-weight: 700;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .export-btn:hover {
+            background: #059669;
+        }
+
+        .export-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 300;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            backdrop-filter: blur(4px);
+        }
+
+        .modal-overlay.open {
+            display: flex;
+        }
+
+        .modal {
+            background: var(--card);
+            border-radius: var(--radius);
+            width: 100%;
+            max-width: 700px;
+            max-height: 85vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow-xl);
+            animation: modalIn 0.3s ease;
+        }
+
+        @keyframes modalIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .modal-header {
+            padding: 28px 32px 0;
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+        }
+
+        .modal-header h2 {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--primary);
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.6rem;
+            cursor: pointer;
+            color: var(--text-secondary);
+            line-height: 1;
+        }
+
+        .modal-body {
+            padding: 24px 32px 32px;
+        }
+
+        .modal-profile {
+            background: var(--bg);
+            padding: 16px 20px;
+            border-radius: var(--radius-sm);
+            margin-bottom: 24px;
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            border-left: 4px solid var(--primary-light);
+        }
+
+        .modal-section {
+            margin-bottom: 24px;
+        }
+
+        .modal-section h4 {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .skill-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+        }
+
+        .skill-table th {
+            background: var(--bg);
+            padding: 10px 14px;
+            text-align: left;
+            font-weight: 700;
+            color: var(--text-secondary);
+            border-bottom: 2px solid var(--border);
+        }
+
+        .skill-table td {
+            padding: 10px 14px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .match-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-weight: 600;
+        }
+
+        .match-status.match {
+            color: var(--success);
+        }
+
+        .match-status.missing {
+            color: var(--error);
+        }
+
+        .score-breakdown {
+            background: var(--bg);
+            border-radius: var(--radius-sm);
+            padding: 20px;
+        }
+
+        .score-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .score-row:last-child {
+            border-bottom: none;
+            font-weight: 800;
+            font-size: 1.1rem;
+            color: var(--primary);
+            padding-top: 12px;
+        }
+
+        .score-row label {
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+
+        .score-row span {
+            font-weight: 700;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        .modal-shortlist-btn {
+            flex: 1;
+            padding: 14px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-weight: 700;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .modal-shortlist-btn:hover {
+            background: #152e6e;
+        }
+
+        .modal-shortlist-btn.shortlisted {
+            background: var(--success);
+        }
+
+        .modal-close-btn {
+            padding: 14px 28px;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .modal-close-btn:hover {
+            background: var(--border);
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--primary);
+            color: white;
+            padding: 32px;
+            margin-top: 60px;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .footer-metrics {
+            display: flex;
+            gap: 24px;
+            flex-wrap: wrap;
+        }
+
+        .footer-metric {
+            text-align: center;
+        }
+
+        .footer-metric .value {
+            font-size: 1.3rem;
+            font-weight: 800;
+        }
+
+        .footer-metric .label {
+            font-size: 0.75rem;
+            opacity: 0.8;
+        }
+
+        .footer-info {
+            font-size: 0.8rem;
+            opacity: 0.7;
+        }
+
+        /* Overlay backdrop */
+        .panel-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.3);
+            z-index: 190;
+            display: none;
+        }
+
+        .panel-backdrop.open {
+            display: block;
+        }
+
+        /* Loading Animation */
+        .loading-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(255,255,255,0.9);
+            z-index: 500;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .loading-overlay.show {
+            display: flex;
+        }
+
+        .spinner {
+            width: 48px;
+            height: 48px;
+            border: 4px solid var(--border);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header {
+                padding: 12px 16px;
+            }
+
+            .logo {
+                font-size: 1.1rem;
+            }
+
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .hero p {
+                font-size: 1rem;
+            }
+
+            .landing {
+                padding: 32px 16px;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .candidates-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .dashboard {
+                padding: 16px;
+            }
+
+            .dashboard-header {
+                padding: 16px 20px;
+            }
+
+            .shortlist-panel {
+                width: 100%;
+                right: -100%;
+            }
+
+            .modal {
+                max-height: 90vh;
+            }
+
+            .modal-header, .modal-body {
+                padding-left: 20px;
+                padding-right: 20px;
+            }
+
+            .filter-bar {
+                top: 58px;
+            }
+
+            .trust-badges {
+                gap: 8px;
+            }
+
+            .trust-badge {
+                padding: 8px 14px;
+                font-size: 0.8rem;
+            }
+
+            .job-cards {
+                grid-template-columns: 1fr;
+            }
+
+            .footer-content {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+
+        /* No candidates message */
+        .no-results {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-secondary);
+        }
+
+        .no-results h3 {
+            font-size: 1.2rem;
+            margin-bottom: 8px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="logo" onclick="showLanding()">
+            <div class="logo-icon">⚡</div>
+            AutoRank AI
+        </div>
+        <div class="header-actions">
+            <button class="shortlist-btn-header" onclick="toggleShortlistPanel()" id="headerShortlistBtn">
+                📋 Shortlist
+                <span class="shortlist-badge" id="shortlistCount">0</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Landing Page -->
+    <section class="landing" id="landingPage">
+        <div class="hero">
+            <div class="hero-badge">🤖 AI-Powered Screening Engine</div>
+            <h1>Intelligent Candidate <span>Screening & Ranking</span></h1>
+            <p>Leverage TF-IDF and cosine similarity to rank candidates by true skill relevance — not just keyword matching. Make data-driven hiring decisions in seconds.</p>
+            <button class="cta-btn" onclick="showJobSelection()">
+                Start New Assessment →
+            </button>
+        </div>
+
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">📊</div>
+                <h3>TF-IDF + Cosine Similarity</h3>
+                <p>Advanced NLP to measure true semantic similarity between job requirements and candidate profiles.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">⚖️</div>
+                <h3>Experience Weighting</h3>
+                <p>Weighted scoring formula combining skill similarity (70%) with experience matching (30%).</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🎯</div>
+                <h3>Skills Gap Analysis</h3>
+                <p>Instantly identify matching and missing skills for each candidate with visual breakdowns.</p>
+            </div>
+        </div>
+
+        <div class="trust-badges">
+            <div class="trust-badge">MAP = <span>1.000</span></div>
+            <div class="trust-badge">Spearman ρ = <span>0.889</span></div>
+            <div class="trust-badge">🤖 <span>AI-Powered</span></div>
+        </div>
+    </section>
+
+    <!-- Job Selection Page -->
+    <section class="job-selection" id="jobSelectionPage">
+        <h2 class="section-title">Select or Create Job Assessment</h2>
+        <p class="section-subtitle">Choose a pre-loaded job description or enter your own to begin screening candidates.</p>
+
+        <div class="quick-select">
+            <h3>⚡ Quick Select — Pre-Loaded Jobs</h3>
+            <div class="job-cards">
+                <div class="job-card" onclick="selectJob('data_analyst')" id="card-data_analyst">
+                    <h4>📊 Data Analyst</h4>
+                    <div class="skills-list">
+                        <span class="skill-chip">Python</span>
+                        <span class="skill-chip">SQL</span>
+                        <span class="skill-chip">Tableau</span>
+                    </div>
+                    <div class="exp">3+ years experience required</div>
+                </div>
+                <div class="job-card" onclick="selectJob('marketing_manager')" id="card-marketing_manager">
+                    <h4>📢 Marketing Manager</h4>
+                    <div class="skills-list">
+                        <span class="skill-chip">SEO</span>
+                        <span class="skill-chip">Content Marketing</span>
+                        <span class="skill-chip">Google Analytics</span>
+                    </div>
+                    <div class="exp">4+ years experience required</div>
+                </div>
+                <div class="job-card" onclick="selectJob('software_engineer')" id="card-software_engineer">
+                    <h4>💻 Software Engineer</h4>
+                    <div class="skills-list">
+                        <span class="skill-chip">Python</span>
+                        <span class="skill-chip">Django</span>
+                        <span class="skill-chip">AWS</span>
+                    </div>
+                    <div class="exp">3+ years experience required</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="divider">or enter custom job description</div>
+
+        <div class="custom-form">
+            <div class="form-group">
+                <label>Job Title</label>
+                <input type="text" id="customTitle" placeholder="e.g., Senior Data Engineer">
+            </div>
+            <div class="form-group">
+                <label>Job Description</label>
+                <textarea id="customDesc" placeholder="Describe the role, responsibilities, and requirements..."></textarea>
+            </div>
+            <div class="form-group">
+                <label>Required Skills (comma-separated)</label>
+                <input type="text" id="customSkills" placeholder="e.g., Python, SQL, Spark, AWS">
+            </div>
+            <button class="analyze-btn" id="analyzeCustomBtn" onclick="analyzeCustomJob()">
+                🔍 Analyze Candidates
+            </button>
+        </div>
+    </section>
+
+    <!-- Dashboard -->
+    <section class="dashboard" id="dashboardPage">
+        <div class="dashboard-header">
+            <div class="dashboard-header-top">
+                <div class="job-info" id="dashJobInfo">
+                    <h2>Data Analyst</h2>
+                    <div class="meta">
+                        <span class="skill-chip">Python</span>
+                        <span class="skill-chip">SQL</span>
+                        <span class="skill-chip">Tableau</span>
+                        <span class="exp-badge">3+ years</span>
+                    </div>
+                </div>
+                <button class="back-btn" onclick="showJobSelection()">← Change Job</button>
+            </div>
+        </div>
+
+        <div class="filter-bar" id="filterBar"></div>
+
+        <div class="dashboard-content">
+            <div class="candidates-grid" id="candidatesGrid"></div>
+        </div>
+    </section>
+
+    <!-- Modal -->
+    <div class="modal-overlay" id="modalOverlay" onclick="closeModalOutside(event)">
+        <div class="modal" id="modalContent"></div>
+    </div>
+
+    <!-- Shortlist Panel -->
+    <div class="panel-backdrop" id="panelBackdrop" onclick="toggleShortlistPanel()"></div>
+    <div class="shortlist-panel" id="shortlistPanel">
+        <div class="shortlist-panel-header">
+            <h3>📋 Shortlisted Candidates</h3>
+            <button class="close-panel-btn" onclick="toggleShortlistPanel()">×</button>
+        </div>
+        <div class="shortlist-panel-body" id="shortlistBody"></div>
+        <div class="shortlist-panel-footer">
+            <button class="export-btn" id="exportBtn" onclick="exportCSV()">📥 Export Shortlist as CSV</button>
+        </div>
+    </div>
+
+    <!-- Loading -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="spinner"></div>
+        <div class="loading-text">Analyzing candidates with TF-IDF model...</div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer" id="appFooter">
+        <div class="footer-content">
+            <div class="footer-metrics">
+                <div class="footer-metric">
+                    <div class="value">1.000</div>
+                    <div class="label">MAP Score</div>
+                </div>
+                <div class="footer-metric">
+                    <div class="value">0.889</div>
+                    <div class="label">Spearman ρ</div>
+                </div>
+                <div class="footer-metric">
+                    <div class="value">≥75%</div>
+                    <div class="label">HIGH Threshold</div>
+                </div>
+                <div class="footer-metric">
+                    <div class="value">45-74%</div>
+                    <div class="label">MEDIUM Range</div>
+                </div>
+                <div class="footer-metric">
+                    <div class="value">&lt;45%</div>
+                    <div class="label">LOW Threshold</div>
+                </div>
+            </div>
+            <div class="footer-info">
+                AutoRank AI © 2025 | TF-IDF + Cosine Similarity Model<br>
+                Master's Data Analytics Project
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // =========== DATA ===========
+        const jobs = {
+            data_analyst: {
+                title: "Data Analyst",
+                icon: "📊",
+                skills: ["Python", "SQL", "Tableau"],
+                experience: 3
+            },
+            marketing_manager: {
+                title: "Marketing Manager",
+                icon: "📢",
+                skills: ["SEO", "Content Marketing", "Google Analytics"],
+                experience: 4
+            },
+            software_engineer: {
+                title: "Software Engineer",
+                icon: "💻",
+                skills: ["Python", "Django", "AWS"],
+                experience: 3
+            }
+        };
+
+        const candidates = [
+            {
+                id: "C1",
+                name: "Charlie Brown",
+                profile: "Data Analyst with strong SQL (5 years) and Tableau (4 years) expertise. Python (2 years).",
+                skills: { Python: 2, SQL: 5, Tableau: 4, Excel: 3 },
+                scores: {
+                    data_analyst: { score: 89.5, tier: "HIGH" },
+                    marketing_manager: { score: 0, tier: "LOW" },
+                    software_engineer: { score: 24.5, tier: "LOW" }
+                }
+            },
+            {
+                id: "C2",
+                name: "Alice Chen",
+                profile: "Senior Data Analyst with 6 years experience in analytics and visualization. Expert in Python, SQL, Tableau.",
+                skills: { Python: 4, SQL: 4, Tableau: 3, Excel: 5 },
+                scores: {
+                    data_analyst: { score: 73.2, tier: "MEDIUM" },
+                    marketing_manager: { score: 0, tier: "LOW" },
+                    software_engineer: { score: 38.1, tier: "LOW" }
+                }
+            },
+            {
+                id: "C3",
+                name: "Helen Torres",
+                profile: "Backend engineer with experience in Python, AWS, and SQL. Currently building cloud-native applications.",
+                skills: { Python: 3, AWS: 2, SQL: 3, Java: 2 },
+                scores: {
+                    data_analyst: { score: 59.9, tier: "MEDIUM" },
+                    marketing_manager: { score: 0, tier: "LOW" },
+                    software_engineer: { score: 49.6, tier: "MEDIUM" }
+                }
+            },
+            {
+                id: "C4",
+                name: "Fiona Zhang",
+                profile: "Senior full-stack developer with expertise in Python, Django, and AWS. 7 years of backend development.",
+                skills: { Python: 5, Django: 5, AWS: 4, SQL: 3 },
+                scores: {
+                    data_analyst: { score: 51.4, tier: "MEDIUM" },
+                    marketing_manager: { score: 0, tier: "LOW" },
+                    software_engineer: { score: 86.1, tier: "HIGH" }
+                }
+            },
+            {
+                id: "C5",
+                name: "Diana Prince",
+                profile: "Marketing leader with 8 years experience in SEO, content strategy, and analytics. Proven track record.",
+                skills: { SEO: 5, "Content Marketing": 5, "Google Analytics": 4, Excel: 3 },
+                scores: {
+                    data_analyst: { score: 0, tier: "LOW" },
+                    marketing_manager: { score: 49.1, tier: "MEDIUM" },
+                    software_engineer: { score: 0, tier: "LOW" }
+                }
+            },
+            {
+                id: "C6",
+                name: "Evan Wright",
+                profile: "Marketing coordinator skilled in SEO and content creation. Currently upskilling in analytics.",
+                skills: { SEO: 2, "Content Marketing": 3, "Social Media": 4 },
+                scores: {
+                    data_analyst: { score: 0, tier: "LOW" },
+                    marketing_manager: { score: 33.7, tier: "LOW" },
+                    software_engineer: { score: 0, tier: "LOW" }
+                }
+            },
+            {
+                id: "C7",
+                name: "George Lee",
+                profile: "Junior developer with Python and Django experience. Strong frontend skills in HTML/CSS.",
+                skills: { Python: 2, Django: 1, HTML: 5, CSS: 5 },
+                scores: {
+                    data_analyst: { score: 22.9, tier: "LOW" },
+                    marketing_manager: { score: 0, tier: "LOW" },
+                    software_engineer: { score: 22.2, tier: "LOW" }
+                }
+            },
+            {
+                id: "C8",
+                name: "Bob Smith",
+                profile: "Business analyst with basic Python and strong Excel skills. Focused on reporting and dashboards.",
+                skills: { Python: 1, Excel: 4, PowerPoint: 4 },
+                scores: {
+                    data_analyst: { score: 11.6, tier: "LOW" },
+                    marketing_manager: { score: 0, tier: "LOW" },
+                    software_engineer: { score: 11.5, tier: "LOW" }
+                }
+            }
+        ];
+
+        // =========== STATE ===========
+        let currentJob = null;
+        let currentFilter = "ALL";
+        let shortlist = [];
+        let chartInstances = {};
+
+        // Try to load shortlist from localStorage
+        try {
+            const saved = localStorage.getItem('autorank_shortlist');
+            if (saved) shortlist = JSON.parse(saved);
+        } catch(e) {}
+
+        // =========== NAVIGATION ===========
+        function showLanding() {
+            document.getElementById('landingPage').style.display = 'flex';
+            document.getElementById('jobSelectionPage').style.display = 'none';
+            document.getElementById('dashboardPage').style.display = 'none';
+        }
+
+        function showJobSelection() {
+            document.getElementById('landingPage').style.display = 'none';
+            document.getElementById('jobSelectionPage').style.display = 'block';
+            document.getElementById('dashboardPage').style.display = 'none';
+            clearJobCardSelections();
+        }
+
+        function showDashboard() {
+            document.getElementById('landingPage').style.display = 'none';
+            document.getElementById('jobSelectionPage').style.display = 'none';
+            document.getElementById('dashboardPage').style.display = 'block';
+            renderDashboard();
+        }
+
+        function clearJobCardSelections() {
+            document.querySelectorAll('.job-card').forEach(c => c.classList.remove('selected'));
+        }
+
+        // =========== JOB SELECTION ===========
+        function selectJob(jobKey) {
+            currentJob = jobKey;
+            clearJobCardSelections();
+            document.getElementById('card-' + jobKey).classList.add('selected');
+
+            // Show loading, then dashboard
+            showLoading();
+            setTimeout(() => {
+                hideLoading();
+                showDashboard();
+            }, 1200);
+        }
+
+        function analyzeCustomJob() {
+            const title = document.getElementById('customTitle').value.trim();
+            const skills = document.getElementById('customSkills').value.trim();
+            if (!title || !skills) {
+                // Simple custom dialog
+                showNotification('Please enter at least a Job Title and Required Skills.');
+                return;
+            }
+            // For custom jobs, default to data_analyst scoring to demo
+            currentJob = 'data_analyst';
+            showLoading();
+            setTimeout(() => {
+                hideLoading();
+                showDashboard();
+            }, 1500);
+        }
+
+        // =========== LOADING ===========
+        function showLoading() {
+            document.getElementById('loadingOverlay').classList.add('show');
+        }
+
+        function hideLoading() {
+            document.getElementById('loadingOverlay').classList.remove('show');
+        }
+
+        // =========== DASHBOARD RENDERING ===========
+        function renderDashboard() {
+            const job = jobs[currentJob];
+
+            // Update header
+            const jobInfo = document.getElementById('dashJobInfo');
+            jobInfo.innerHTML = `
+                <h2>${job.icon} ${job.title}</h2>
+                <div class="meta">
+                    ${job.skills.map(s => `<span class="skill-chip">${s}</span>`).join('')}
+                    <span class="exp-badge">${job.experience}+ years</span>
+                </div>
+            `;
+
+            // Sort candidates by score for current job
+            const sorted = [...candidates].sort((a, b) => {
+                return b.scores[currentJob].score - a.scores[currentJob].score;
+            });
+
+            // Calculate tier counts
+            const counts = { ALL: sorted.length, HIGH: 0, MEDIUM: 0, LOW: 0 };
+            sorted.forEach(c => counts[c.scores[currentJob].tier]++);
+
+            // Render filter bar
+            renderFilterBar(counts);
+
+            // Render candidates
+            renderCandidates(sorted);
+
+            // Update shortlist UI
+            updateShortlistUI();
+        }
+
+        function renderFilterBar(counts) {
+            const filterBar = document.getElementById('filterBar');
+            filterBar.innerHTML = `
+                <button class="filter-btn ${currentFilter === 'ALL' ? 'active' : ''}" onclick="setFilter('ALL')">
+                    All <span class="filter-count">${counts.ALL}</span>
+                </button>
+                <button class="filter-btn ${currentFilter === 'HIGH' ? 'active' : ''}" onclick="setFilter('HIGH')">
+                    🔵 High <span class="filter-count">${counts.HIGH}</span>
+                </button>
+                <button class="filter-btn ${currentFilter === 'MEDIUM' ? 'active' : ''}" onclick="setFilter('MEDIUM')">
+                    🟢 Medium <span class="filter-count">${counts.MEDIUM}</span>
+                </button>
+                <button class="filter-btn ${currentFilter === 'LOW' ? 'active' : ''}" onclick="setFilter('LOW')">
+                    🟡 Low <span class="filter-count">${counts.LOW}</span>
+                </button>
+            `;
+        }
+
+        function setFilter(filter) {
+            currentFilter = filter;
+            renderDashboard();
+        }
+
+        function renderCandidates(sorted) {
+            const grid = document.getElementById('candidatesGrid');
+            // Destroy existing charts
+            Object.values(chartInstances).forEach(c => c.destroy());
+            chartInstances = {};
+
+            const filtered = currentFilter === 'ALL' ? sorted : sorted.filter(c => c.scores[currentJob].tier === currentFilter);
+
+            if (filtered.length === 0) {
+                grid.innerHTML = `<div class="no-results"><h3>No candidates in this tier</h3><p>Try selecting a different filter.</p></div>`;
+                return;
+            }
+
+            grid.innerHTML = filtered.map((candidate, idx) => {
+                const score = candidate.scores[currentJob].score;
+                const tier = candidate.scores[currentJob].tier;
+                const rank = sorted.indexOf(candidate) + 1;
+                const job = jobs[currentJob];
+                const isShortlisted = shortlist.some(s => s.id === candidate.id && s.job === currentJob);
+
+                // Determine matching and missing skills
+                const matchingSkills = job.skills.filter(s => candidate.skills[s] && candidate.skills[s] > 0);
+                const missingSkills = job.skills.filter(s => !candidate.skills[s] || candidate.skills[s] === 0);
+
+                return `
+                    <div class="candidate-card" style="animation-delay: ${idx * 0.05}s">
+                        <div class="card-top">
+                            <div class="rank-badge">#${rank}</div>
+                            <div class="card-name-section">
+                                <h3>${candidate.name}</h3>
+                                <span class="tier-badge tier-${tier.toLowerCase()}">${tier === 'HIGH' ? '🔵' : tier === 'MEDIUM' ? '🟢' : '🟡'} ${tier}</span>
+                            </div>
+                            <div class="score-circle">
+                                <canvas id="chart-${candidate.id}" width="56" height="56"></canvas>
+                                <div class="score-text">${score}%</div>
+                            </div>
+                        </div>
+                        <div class="card-skills">
+                            ${matchingSkills.length > 0 ? `
+                                <div class="card-skills-label">Matching Skills</div>
+                                <div class="skills-row">
+                                    ${matchingSkills.map(s => `<span class="skill-match">✓ ${s}</span>`).join('')}
+                                </div>
+                            ` : ''}
+                            ${missingSkills.length > 0 ? `
+                                <div class="card-skills-label" style="margin-top:8px">Missing Skills</div>
+                                <div class="skills-row">
+                                    ${missingSkills.map(s => `<span class="skill-missing">✗ ${s}</span>`).join('')}
+                                </div>
+                            ` : ''}
+                        </div>
+                        <div class="card-actions">
+                            <button class="details-btn" onclick="openModal('${candidate.id}')">View Details</button>
+                            <button class="shortlist-card-btn ${isShortlisted ? 'shortlisted' : ''}" onclick="toggleShortlist('${candidate.id}')" id="slbtn-${candidate.id}">
+                                ${isShortlisted ? '✓' : '＋'}
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            // Render charts
+            setTimeout(() => {
+                filtered.forEach(candidate => {
+                    const score = candidate.scores[currentJob].score;
+                    const tier = candidate.scores[currentJob].tier;
+                    renderScoreChart(candidate.id, score, tier);
+                });
+            }, 50);
+        }
+
+        function renderScoreChart(candidateId, score, tier) {
+            const canvas = document.getElementById('chart-' + candidateId);
+            if (!canvas) return;
+
+            const color = tier === 'HIGH' ? '#1E3A8A' : tier === 'MEDIUM' ? '#10B981' : '#F59E0B';
+
+            chartInstances[candidateId] = new Chart(canvas, {
+                type: 'doughnut',
+                data: {
+                    datasets: [{
+                        data: [score, 100 - score],
+                        backgroundColor: [color, '#E5E7EB'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    cutout: '72%',
+                    responsive: false,
+                    plugins: { legend: { display: false }, tooltip: { enabled: false } },
+                    animation: { animateRotate: true, duration: 800 }
+                }
+            });
+        }
+
+        // =========== MODAL ===========
+        function openModal(candidateId) {
+            const candidate = candidates.find(c => c.id === candidateId);
+            if (!candidate) return;
+
+            const job = jobs[currentJob];
+            const score = candidate.scores[currentJob].score;
+            const tier = candidate.scores[currentJob].tier;
+            const sorted = [...candidates].sort((a, b) => b.scores[currentJob].score - a.scores[currentJob].score);
+            const rank = sorted.indexOf(candidate) + 1;
+            const isShortlisted = shortlist.some(s => s.id === candidate.id && s.job === currentJob);
+
+            // Calculate similarity and experience parts for breakdown
+            const simScore = (score / 0.7 * 0.7).toFixed(1); // Approx
+            const expScore = (score * 0.3 / 0.7).toFixed(1); // Approx
+
+            // Build skill table
+            const allSkills = [...new Set([...job.skills, ...Object.keys(candidate.skills)])];
+            const skillRows = job.skills.map(skill => {
+                const years = candidate.skills[skill] || 0;
+                const isMatch = years > 0;
+                return `
+                    <tr>
+                        <td><strong>${skill}</strong></td>
+                        <td>Yes</td>
+                        <td>${years} year${years !== 1 ? 's' : ''}</td>
+                        <td><span class="match-status ${isMatch ? 'match' : 'missing'}">${isMatch ? '✅ Match' : '❌ Missing'}</span></td>
+                    </tr>
+                `;
+            }).join('');
+
+            // Add non-required skills the candidate has
+            const additionalSkills = Object.keys(candidate.skills).filter(s => !job.skills.includes(s));
+            const additionalRows = additionalSkills.map(skill => {
+                return `
+                    <tr style="opacity:0.7">
+                        <td>${skill}</td>
+                        <td>No</td>
+                        <td>${candidate.skills[skill]} year${candidate.skills[skill] !== 1 ? 's' : ''}</td>
+                        <td><span class="match-status" style="color:var(--text-secondary)">— Extra</span></td>
+                    </tr>
+                `;
+            }).join('');
+
+            const modal = document.getElementById('modalContent');
+            modal.innerHTML = `
+                <div class="modal-header">
+                    <div>
+                        <h2>#${rank} ${candidate.name}</h2>
+                        <span class="tier-badge tier-${tier.toLowerCase()}" style="margin-top:8px;display:inline-flex">${tier === 'HIGH' ? '🔵' : tier === 'MEDIUM' ? '🟢' : '🟡'} ${tier} MATCH</span>
+                    </div>
+                    <button class="modal-close" onclick="closeModal()">×</button>
+                </div>
+                <div class="modal-body">
+                    <div class="modal-profile">
+                        <strong>Profile:</strong> ${candidate.profile}
+                    </div>
+
+                    <div class="modal-section">
+                        <h4>Skill-by-Skill Breakdown</h4>
+                        <table class="skill-table">
+                            <thead>
+                                <tr>
+                                    <th>Skill</th>
+                                    <th>Required</th>
+                                    <th>Candidate Years</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${skillRows}
+                                ${additionalRows}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="modal-section">
+                        <h4>Score Breakdown</h4>
+                        <div class="score-breakdown">
+                            <div class="score-row">
+                                <label>Similarity Score (TF-IDF Cosine)</label>
+                                <span>70% weight</span>
+                            </div>
+                            <div class="score-row">
+                                <label>Experience Score</label>
+                                <span>30% weight</span>
+                            </div>
+                            <div class="score-row">
+                                <label>Formula</label>
+                                <span>0.7 × Similarity + 0.3 × Experience</span>
+                            </div>
+                            <div class="score-row">
+                                <label>Final Score</label>
+                                <span>${score}%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modal-actions">
+                        <button class="modal-shortlist-btn ${isShortlisted ? 'shortlisted' : ''}" onclick="toggleShortlist('${candidate.id}'); openModal('${candidate.id}');" id="modal-sl-btn">
+                            ${isShortlisted ? '✓ Shortlisted' : '＋ Shortlist Candidate'}
+                        </button>
+                        <button class="modal-close-btn" onclick="closeModal()">Close</button>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('modalOverlay').classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            document.getElementById('modalOverlay').classList.remove('open');
+            document.body.style.overflow = '';
+        }
+
+        function closeModalOutside(event) {
+            if (event.target === document.getElementById('modalOverlay')) {
+                closeModal();
+            }
+        }
+
+        // =========== SHORTLIST ===========
+        function toggleShortlist(candidateId) {
+            const candidate = candidates.find(c => c.id === candidateId);
+            const idx = shortlist.findIndex(s => s.id === candidateId && s.job === currentJob);
+
+            if (idx > -1) {
+                shortlist.splice(idx, 1);
+            } else {
+                shortlist.push({
+                    id: candidateId,
+                    name: candidate.name,
+                    job: currentJob,
+                    jobTitle: jobs[currentJob].title,
+                    score: candidate.scores[currentJob].score,
+                    tier: candidate.scores[currentJob].tier
+                });
+            }
+
+            saveShortlist();
+            updateShortlistUI();
+            renderDashboard();
+        }
+
+        function removeFromShortlist(candidateId, jobKey) {
+            const idx = shortlist.findIndex(s => s.id === candidateId && s.job === jobKey);
+            if (idx > -1) {
+                shortlist.splice(idx, 1);
+                saveShortlist();
+                updateShortlistUI();
+                if (currentJob) renderDashboard();
+            }
+        }
+
+        function updateShortlistUI() {
+            // Update header badge
+            document.getElementById('shortlistCount').textContent = shortlist.length;
+            document.getElementById('shortlistCount').style.display = shortlist.length > 0 ? 'flex' : 'none';
+
+            // Update panel body
+            const body = document.getElementById('shortlistBody');
+            if (shortlist.length === 0) {
+                body.innerHTML = `<div class="shortlist-empty"><p>No candidates shortlisted yet.</p><p style="font-size:0.8rem;margin-top:8px">Click the + button on candidate cards to add them here.</p></div>`;
+            } else {
+                body.innerHTML = shortlist.map(item => `
+                    <div class="shortlist-item">
+                        <div class="shortlist-item-info">
+                            <h4>${item.name}</h4>
+                            <p>${item.jobTitle} — ${item.score}% (${item.tier})</p>
+                        </div>
+                        <button class="remove-shortlist-btn" onclick="removeFromShortlist('${item.id}', '${item.job}')" title="Remove">✕</button>
+                    </div>
+                `).join('');
+            }
+
+            // Export button
+            document.getElementById('exportBtn').disabled = shortlist.length === 0;
+        }
+
+        function toggleShortlistPanel() {
+            const panel = document.getElementById('shortlistPanel');
+            const backdrop = document.getElementById('panelBackdrop');
+            panel.classList.toggle('open');
+            backdrop.classList.toggle('open');
+        }
+
+        function saveShortlist() {
+            try {
+                localStorage.setItem('autorank_shortlist', JSON.stringify(shortlist));
+            } catch(e) {}
+        }
+
+        // =========== EXPORT CSV ===========
+        function exportCSV() {
+            if (shortlist.length === 0) return;
+
+            const headers = ['Name', 'Job Title', 'Score (%)', 'Tier'];
+            const rows = shortlist.map(item => [item.name, item.jobTitle, item.score, item.tier]);
+            const csv = [headers, ...rows].map(row => row.map(cell => `"${cell}"`).join(',')).join('\n');
+
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'autorank_shortlist.csv';
+            a.click();
+            URL.revokeObjectURL(url);
+
+            showNotification('CSV exported successfully!');
+        }
+
+        // =========== NOTIFICATION ===========
+        function showNotification(message) {
+            const notif = document.createElement('div');
+            notif.style.cssText = 'position:fixed;top:80px;right:24px;background:#1E3A8A;color:white;padding:14px 24px;border-radius:8px;font-weight:600;font-size:0.9rem;z-index:999;box-shadow:0 4px 14px rgba(0,0,0,0.2);animation:fadeIn 0.3s ease;';
+            notif.textContent = message;
+            document.body.appendChild(notif);
+            setTimeout(() => {
+                notif.style.opacity = '0';
+                notif.style.transition = 'opacity 0.3s';
+                setTimeout(() => notif.remove(), 300);
+            }, 2500);
+        }
+
+        // =========== INIT ===========
+        updateShortlistUI();
+    </script>
+</body>
+</html>
